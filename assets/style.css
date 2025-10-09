@@ -39,6 +39,21 @@ body {
   overflow: hidden;
 }
 
+.auth-card { padding: 20px; }
+.auth-card h2 { margin: 0 0 12px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 14px; }
+.form-group label { color: #374151; font-weight: 600; }
+.form-group input[type="password"], .form-group input[type="text"] {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+.form-group input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.15); }
+.error { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 8px; margin: 8px 0; }
+.form-actions { display: flex; gap: 10px; margin-top: 8px; }
+
 .file-table { width: 100%; border-collapse: collapse; }
 .file-table th, .file-table td { padding: 12px 14px; text-align: left; }
 .file-table thead th { background: #f9fafb; color: #6b7280; font-weight: 600; font-size: 14px; }
