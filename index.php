@@ -79,15 +79,24 @@ function decodePath(string $path): string {
 }
 function pathToHref(string $rel): string {
   $base = getBaseUriPrefix();
-  if ($rel === '') { return ($base === '' ? '/' : $base . '/'); }
+  $front = ($base === '' ? '' : $base) . '/index.php';
+  if ($rel === '') { return $front . '/'; }
   $parts = explode('/', $rel);
   $enc = [];
   foreach ($parts as $p) { $enc[] = rawurlencode($p); }
-  return ($base === '' ? '' : $base) . '/' . implode('/', $enc);
+  return $front . '/' . implode('/', $enc);
 }
 function downloadHref(string $rel): string {
   $base = getBaseUriPrefix();
   return ($base === '' ? '' : $base . '/') . 'download.php?p=' . rawurlencode($rel);
+}
+function assetHref(string $rel): string {
+  $base = getBaseUriPrefix();
+  $rel = str_replace('\\', '/', $rel);
+  $parts = array_values(array_filter(explode('/', $rel), 'strlen'));
+  $enc = [];
+  foreach ($parts as $p) { $enc[] = rawurlencode($p); }
+  return ($base === '' ? '' : $base . '/') . implode('/', $enc);
 }
 
 // Determine current directory from request URI
@@ -241,6 +250,7 @@ foreach ($entries as $entry) {
   if ($entry === '.' || $entry === '..') {
     continue;
   }
+  if ($entry === 'hide.env' || $entry === 'password.env') { continue; }
   if (str_starts_with($entry, '.')) { // hide dot files/folders
     continue;
   }
@@ -294,7 +304,7 @@ header('Content-Type: text/html; charset=utf-8');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>文件浏览器</title>
-    <link rel="stylesheet" href="<?php echo h(pathToHref('assets/style.css')); ?>" />
+    <link rel="stylesheet" href="<?php echo h(assetHref('assets/style.css')); ?>" />
   </head>
   <body>
     <header class="site-header">

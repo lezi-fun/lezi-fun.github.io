@@ -9,6 +9,13 @@ if (!$supports_str_starts_with) {
     return strpos($haystack, $needle) === 0;
   }
 }
+if (!function_exists('str_ends_with')) {
+  function str_ends_with(string $haystack, string $needle): bool {
+    if ($needle === '') { return true; }
+    $len = strlen($needle);
+    return substr($haystack, -$len) === $needle;
+  }
+}
 
 $session_status = function_exists('session_status') ? session_status() : PHP_SESSION_NONE;
 if ($session_status !== PHP_SESSION_ACTIVE) {
@@ -60,6 +67,11 @@ $relative = trim($relative, '/');
 
 if (!isSafeRelativePath($relative)) {
   badRequest('非法路径');
+}
+
+// Never allow downloading env files
+if ($relative === 'hide.env' || $relative === 'password.env' || str_ends_with($relative, '/hide.env') || str_ends_with($relative, '/password.env')) {
+  notFound();
 }
 
 $absolute = realpath($ROOT_DIR . DIRECTORY_SEPARATOR . $relative);
