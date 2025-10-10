@@ -10,6 +10,18 @@ if (!$supports_str_starts_with) {
   }
 }
 
+$session_status = function_exists('session_status') ? session_status() : PHP_SESSION_NONE;
+if ($session_status !== PHP_SESSION_ACTIVE) {
+  @session_start();
+}
+
+$supports_str_starts_with = function_exists('str_starts_with');
+if (!$supports_str_starts_with) {
+  function str_starts_with(string $haystack, string $needle): bool {
+    return strpos($haystack, $needle) === 0;
+  }
+}
+
 $ROOT_DIR = __DIR__;
 
 function badRequest(string $message = 'Bad Request'): void {
@@ -53,6 +65,87 @@ if (!isSafeRelativePath($relative)) {
 $absolute = realpath($ROOT_DIR . DIRECTORY_SEPARATOR . $relative);
 if ($absolute === false || strpos($absolute, $ROOT_DIR) !== 0 || !is_file($absolute)) {
   notFound();
+}
+
+// Enforce hide and password rules (reuse simple loaders)
+function normalizeRel(string $rel): string {
+  $rel = str_replace('\\', '/', $rel);
+  $rel = trim($rel, '/');
+  return $rel;
+}
+function readEnvLines(string $file): array {
+  if (!is_file($file)) { return []; }
+  $lines = @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+  if ($lines === false) { return []; }
+  $out = [];
+  foreach ($lines as $line) {
+    $line = trim($line);
+    if ($line === '' || $line[0] === '#' || $line[0] === ';') { continue; }
+    $out[] = $line;
+  }
+  return $out;
+}
+function loadHiddenPaths(string $rootDir): array {
+  $raw = readEnvLines($rootDir . DIRECTORY_SEPARATOR . 'hide.env');
+  $hidden = [];
+  foreach ($raw as $entry) {
+    $entry = normalizeRel($entry);
+    if ($entry !== '' && !in_array($entry, $hidden, true)) { $hidden[] = $entry; }
+  }
+  usort($hidden, function($a, $b) { return strlen($b) <=> strlen($a); });
+  return $hidden;
+}
+function isHiddenPath(string $rel, array $hidden): bool {
+  foreach ($hidden as $h) {
+    if ($rel === $h || str_starts_with($rel, $h . '/')) { return true; }
+  }
+  return false;
+}
+function loadPasswordRules(string $rootDir): array {
+  $raw = readEnvLines($rootDir . DIRECTORY_SEPARATOR . 'password.env');
+  $rules = [];
+  foreach ($raw as $line) {
+    $path = '';
+    $pass = '';
+    if (strpos($line, '=') !== false) {
+      [$left, $right] = explode('=', $line, 2);
+      $path = normalizeRel($left);
+      $pass = trim($right);
+    } else {
+      $parts = preg_split('/\s+/', $line, 2);
+      if ($parts !== false && count($parts) === 2) {
+        $path = normalizeRel($parts[0]);
+        $pass = trim($parts[1]);
+      }
+    }
+    if ($path !== '' && $pass !== '') { $rules[] = ['path' => $path, 'password' => $pass]; }
+  }
+  usort($rules, function($a, $b) { return strlen($b['path']) <=> strlen($a['path']); });
+  return $rules;
+}
+function requiresPassword(string $rel, array $rules): ?string {
+  foreach ($rules as $rule) {
+    $prefix = $rule['path'];
+    if ($rel === $prefix || str_starts_with($rel, $prefix . '/')) { return $prefix; }
+  }
+  return null;
+}
+
+$hiddenPaths = loadHiddenPaths($ROOT_DIR);
+if (isHiddenPath($relative, $hiddenPaths)) {
+  notFound();
+}
+$passwordRules = loadPasswordRules($ROOT_DIR);
+$requiredPrefix = requiresPassword($relative, $passwordRules);
+if ($requiredPrefix !== null) {
+  $ok = isset($_SESSION['pw_ok']) && is_array($_SESSION['pw_ok']) ? $_SESSION['pw_ok'] : [];
+  $allowed = false;
+  foreach ($ok as $prefix) {
+    if ($prefix === $requiredPrefix && ($relative === $prefix || str_starts_with($relative, $prefix . '/'))) { $allowed = true; break; }
+  }
+  if (!$allowed) {
+    notFound();
+  }
 }
 
 // Determine filename and mime
