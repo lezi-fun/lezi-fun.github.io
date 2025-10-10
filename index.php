@@ -88,7 +88,8 @@ function pathToHref(string $rel): string {
 }
 function downloadHref(string $rel): string {
   $base = getBaseUriPrefix();
-  return ($base === '' ? '' : $base . '/') . 'download.php?p=' . rawurlencode($rel);
+  $prefix = ($base === '' ? '/' : $base . '/');
+  return $prefix . 'download.php?p=' . rawurlencode($rel);
 }
 function assetHref(string $rel): string {
   $base = getBaseUriPrefix();
@@ -96,7 +97,8 @@ function assetHref(string $rel): string {
   $parts = array_values(array_filter(explode('/', $rel), 'strlen'));
   $enc = [];
   foreach ($parts as $p) { $enc[] = rawurlencode($p); }
-  return ($base === '' ? '' : $base . '/') . implode('/', $enc);
+  $prefix = ($base === '' ? '/' : $base . '/');
+  return $prefix . implode('/', $enc);
 }
 
 // Determine current directory from request URI
