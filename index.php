@@ -88,7 +88,8 @@ function pathToHref(string $rel): string {
 }
 function downloadHref(string $rel): string {
   $base = getBaseUriPrefix();
-  return ($base === '' ? '' : $base . '/') . 'download.php?p=' . rawurlencode($rel);
+  $prefix = ($base === '' ? '/' : $base . '/');
+  return $prefix . 'download.php?p=' . rawurlencode($rel);
 }
 function assetHref(string $rel): string {
   $base = getBaseUriPrefix();
@@ -96,7 +97,39 @@ function assetHref(string $rel): string {
   $parts = array_values(array_filter(explode('/', $rel), 'strlen'));
   $enc = [];
   foreach ($parts as $p) { $enc[] = rawurlencode($p); }
-  return ($base === '' ? '' : $base . '/') . implode('/', $enc);
+  $prefix = ($base === '' ? '/' : $base . '/');
+  return $prefix . implode('/', $enc);
+}
+
+// Admin config helpers
+function readAdminConfig(string $rootDir): array {
+  $cfg = [
+    'admin_path' => 'admin',
+    'admin_user' => 'admin',
+    'admin_pass_hash' => '',
+    'title' => '文件浏览器',
+  ];
+  $file = $rootDir . DIRECTORY_SEPARATOR . 'admin.env';
+  if (!is_file($file)) { return $cfg; }
+  $lines = @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+  if ($lines === false) { return $cfg; }
+  foreach ($lines as $line) {
+    $line = trim($line);
+    if ($line === '' || $line[0] === '#' || $line[0] === ';') { continue; }
+    if (strpos($line, '=') === false) { continue; }
+    [$k, $v] = explode('=', $line, 2);
+    $k = trim($k);
+    $v = trim($v);
+    if ($k !== '') { $cfg[$k] = $v; }
+  }
+  return $cfg;
+}
+function writeLog(string $rootDir, string $action, string $rel, string $status): void {
+  $ip = $_SERVER['REMOTE_ADDR'] ?? '-';
+  $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
+  $time = date('Y-m-d H:i:s');
+  $line = sprintf("[%s] %s %s "%s" %s\n", $time, $ip, $action, $rel, $status);
+  @file_put_contents($rootDir . DIRECTORY_SEPARATOR . 'access.log', $line, FILE_APPEND | LOCK_EX);
 }
 
 // Determine current directory from request URI
@@ -120,6 +153,39 @@ if (!isSafeRelativePath($requestedRelDir)) {
   http_response_code(400);
   header('Content-Type: text/plain; charset=utf-8');
   echo "非法路径";
+  exit;
+}
+
+// Load admin config and route admin/setup
+$adminConfig = readAdminConfig($ROOT_DIR);
+$siteTitle = isset($adminConfig['title']) && $adminConfig['title'] !== '' ? $adminConfig['title'] : '文件浏览器';
+$adminPath = isset($adminConfig['admin_path']) && $adminConfig['admin_path'] !== '' ? $adminConfig['admin_path'] : 'admin';
+$hasAdminLock = is_file($ROOT_DIR . DIRECTORY_SEPARATOR . 'admin.lock');
+
+// Redirect to setup if not configured; always allow assets, download, and admin.php direct
+if (!$hasAdminLock) {
+  $allowPaths = ['setup', 'assets', 'download.php', 'admin.php'];
+  $allowed = ($requestedRelDir === 'setup')
+    || str_starts_with($requestedRelDir, 'assets')
+    || $requestedRelDir === ''
+    || $requestedRelDir === 'download.php';
+  if (!$allowed) {
+    header('Location: ' . pathToHref('setup'));
+    exit;
+  }
+  if ($requestedRelDir === '' || $requestedRelDir === 'setup') {
+    $ADMIN_MODE = 'setup';
+    $ADMIN_PATH = $adminPath;
+    require __DIR__ . DIRECTORY_SEPARATOR . 'admin.php';
+    exit;
+  }
+}
+
+// Serve admin UI if visiting admin path
+if ($requestedRelDir === $adminPath) {
+  $ADMIN_MODE = 'admin';
+  $ADMIN_PATH = $adminPath;
+  require __DIR__ . DIRECTORY_SEPARATOR . 'admin.php';
   exit;
 }
 
@@ -250,7 +316,7 @@ foreach ($entries as $entry) {
   if ($entry === '.' || $entry === '..') {
     continue;
   }
-  if ($entry === 'hide.env' || $entry === 'password.env') { continue; }
+  if ($entry === 'hide.env' || $entry === 'password.env' || $entry === 'admin.env' || $entry === 'admin.lock' || $entry === 'access.log' || $entry === 'admin.php') { continue; }
   if (str_starts_with($entry, '.')) { // hide dot files/folders
     continue;
   }
@@ -303,13 +369,13 @@ header('Content-Type: text/html; charset=utf-8');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>文件浏览器</title>
+    <title><?php echo h($siteTitle); ?></title>
     <link rel="stylesheet" href="<?php echo h(assetHref('assets/style.css')); ?>" />
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <h1 class="title">文件浏览器</h1>
+        <h1 class="title"><?php echo h($siteTitle); ?></h1>
         <p class="subtitle">浏览并下载当前网站目录下的文件</p>
       </div>
     </header>
@@ -349,6 +415,7 @@ header('Content-Type: text/html; charset=utf-8');
       <?php endif; ?>
 
       <?php if (!hasPasswordAccess($requestedRelDir, $passwordRules)): ?>
+        <?php writeLog($ROOT_DIR, 'AUTH_REQUIRED', $requestedRelDir, '401'); ?>
         <section class="listing">
           <div class="card auth-card">
             <form method="post" action="<?php echo h(pathToHref($requestedRelDir)); ?>">
@@ -368,6 +435,7 @@ header('Content-Type: text/html; charset=utf-8');
           </div>
         </section>
       <?php else: ?>
+        <?php writeLog($ROOT_DIR, 'LIST', $requestedRelDir, '200'); ?>
         <section class="listing">
           <div class="card">
             <table class="file-table">
