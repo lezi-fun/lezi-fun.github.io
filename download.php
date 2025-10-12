@@ -45,14 +45,6 @@ function notFound(): void {
   exit;
 }
 
-function writeLog(string $rootDir, string $action, string $rel, string $status): void {
-  $ip = $_SERVER['REMOTE_ADDR'] ?? '-';
-  $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
-  $time = date('Y-m-d H:i:s');
-  $line = sprintf("[%s] %s %s \"%s\" %s\n", $time, $ip, $action, $rel, $status);
-  @file_put_contents($rootDir . DIRECTORY_SEPARATOR . 'access.log', $line, FILE_APPEND | LOCK_EX);
-}
-
 function isSafeRelativePath(string $relativePath): bool {
   if ($relativePath === '') {
     return false; // require a file
@@ -74,7 +66,6 @@ $relative = str_replace('\\', '/', $relative);
 $relative = trim($relative, '/');
 
 if (!isSafeRelativePath($relative)) {
-  writeLog($ROOT_DIR, 'DL_BADREQ', $relative, '400');
   badRequest('非法路径');
 }
 
@@ -85,7 +76,6 @@ if ($relative === 'hide.env' || $relative === 'password.env' || str_ends_with($r
 
 $absolute = realpath($ROOT_DIR . DIRECTORY_SEPARATOR . $relative);
 if ($absolute === false || strpos($absolute, $ROOT_DIR) !== 0 || !is_file($absolute)) {
-  writeLog($ROOT_DIR, 'DL_NOTFOUND', $relative, '404');
   notFound();
 }
 
@@ -155,7 +145,6 @@ function requiresPassword(string $rel, array $rules): ?string {
 
 $hiddenPaths = loadHiddenPaths($ROOT_DIR);
 if (isHiddenPath($relative, $hiddenPaths)) {
-  writeLog($ROOT_DIR, 'DL_HIDDEN', $relative, '404');
   notFound();
 }
 $passwordRules = loadPasswordRules($ROOT_DIR);
@@ -167,7 +156,6 @@ if ($requiredPrefix !== null) {
     if ($prefix === $requiredPrefix && ($relative === $prefix || str_starts_with($relative, $prefix . '/'))) { $allowed = true; break; }
   }
   if (!$allowed) {
-    writeLog($ROOT_DIR, 'DL_AUTH_REQUIRED', $relative, '401');
     notFound();
   }
 }
@@ -199,7 +187,6 @@ header('Content-Disposition: attachment; filename="' . $asciiFallback . '"; file
 header('Content-Length: ' . (string)$filesize);
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, max-age=600');
-writeLog($ROOT_DIR, 'DL_OK', $relative, '200');
 
 // Clean buffers and stream file
 while (ob_get_level() > 0) {
