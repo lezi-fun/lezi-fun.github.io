@@ -3,141 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lezi-fun · indie developer</title>
-<meta name="description" content="lezi-fun — student & indie developer. Web products, open-source tools, automation.">
+<title>lezi-fun — 把想法做成真正能用的东西</title>
+<meta name="description" content="lezi-fun · 学生独立开发者。Web 产品、开发者工具、自动化。">
 <style>
   :root{
-    --bg:#0b1117; --panel:#121a23; --panel2:#0f2027; --line:#1f2c37;
-    --text:#e6edf3; --muted:#8aa0b4; --accent:#8be9fd; --accent2:#50fa7b;
+    --background:#070914; --surface:#0d1020; --line:#1d2338;
+    --text:#eceef6; --muted:#9ba3bb; --coral:#ff8b78;
+    --violet:#a78bfa; --green:#5eead4;
+    --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans SC",sans-serif;
+    --serif:"Songti SC","Noto Serif SC",ui-serif,Georgia,Cambria,"Times New Roman",serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans SC",sans-serif;
-    background:linear-gradient(180deg,#0f2027 0%,var(--bg) 40%);
-    color:var(--text); min-height:100vh; line-height:1.6;
+  html{scroll-behavior:smooth}
+  body{background:var(--background);color:var(--text);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--coral);color:#141413}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  /* 导航 */
+  .site-nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.02em;text-decoration:none;color:var(--text)}
+  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--coral);box-shadow:0 0 12px rgba(255,139,120,.8)}
+  .nav-links{display:flex;gap:26px;font-size:.88rem}
+  .nav-links a{color:var(--muted);text-decoration:none;transition:color .15s}
+  .nav-links a:hover{color:var(--coral)}
+
+  /* 状态胶囊 */
+  .status-pill{
+    display:inline-flex;align-items:center;gap:9px;margin:72px 0 28px;
+    padding:7px 16px;border:1px solid var(--line);border-radius:999px;
+    font-size:.76rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;
   }
-  .wrap{max-width:960px;margin:0 auto;padding:64px 20px 40px}
-  .hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:56px}
-  .avatar{
-    width:112px;height:112px;border-radius:50%;border:3px solid var(--accent);
-    box-shadow:0 0 32px rgba(139,233,253,.25); flex:none;
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,.55)}70%{box-shadow:0 0 0 9px rgba(94,234,212,0)}100%{box-shadow:0 0 0 0 rgba(94,234,212,0)}}
+
+  /* 衬线大标题 */
+  h1.hero-title{
+    font-family:var(--serif);font-weight:600;color:var(--text);
+    font-size:clamp(2.5rem,7vw,4.4rem);line-height:1.14;letter-spacing:.01em;margin-bottom:26px;
   }
-  .hero h1{font-size:2.1rem;letter-spacing:.5px}
-  .hero h1 span{color:var(--accent)}
-  .tagline{color:var(--muted);max-width:560px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  .chip{
-    font-size:.78rem;padding:3px 12px;border-radius:999px;
-    border:1px solid var(--line);background:rgba(139,233,253,.06);color:var(--accent);
+  h1.hero-title em{font-style:normal;color:var(--coral)}
+  .hero-meta{color:var(--muted);font-size:1.02rem;max-width:560px;margin-bottom:36px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:96px}
+  .button-primary{
+    display:inline-block;background:var(--coral);color:#141413;font-weight:600;font-size:.92rem;
+    padding:12px 26px;border-radius:8px;text-decoration:none;transition:transform .15s,filter .15s;
   }
-  .stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:52px;color:var(--muted);font-size:.92rem}
-  .stats b{color:var(--text);font-size:1.15rem;display:block}
-  h2{font-size:1.05rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:20px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-bottom:52px}
-  a.card{
-    display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:18px 20px;color:inherit;text-decoration:none;
-    transition:transform .15s ease,border-color .15s ease;
+  .button-primary:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .button-quiet{
+    display:inline-block;color:var(--muted);font-size:.92rem;padding:12px 18px;border-radius:8px;
+    border:1px solid var(--line);text-decoration:none;transition:border-color .15s,color .15s;
   }
-  a.card:hover{transform:translateY(-3px);border-color:var(--accent)}
-  .card .name{font-weight:700;display:flex;align-items:center;gap:8px}
-  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
-  .card p{font-size:.85rem;color:var(--muted);margin-top:6px}
-  .card .go{color:var(--accent);font-size:.78rem;margin-top:10px;display:block}
-  .contrib{
-    background:linear-gradient(135deg,var(--panel2),var(--panel));
-    border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:52px;font-size:.92rem;
+  .button-quiet:hover{border-color:var(--coral);color:var(--text)}
+
+  /* 三步流程 */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:110px}
+  @media(max-width:640px){.steps{grid-template-columns:1fr}}
+  .step{border:1px solid var(--line);border-radius:14px;padding:22px 20px;background:var(--surface)}
+  .step-num{font-family:var(--serif);color:var(--coral);font-size:1.05rem;margin-bottom:10px;display:block}
+  .step b{display:block;font-size:1.02rem;margin-bottom:6px;font-weight:600}
+  .step p{font-size:.85rem;color:var(--muted)}
+
+  /* 项目预览行 */
+  .eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:30px}
+  .eyebrow-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);box-shadow:0 0 10px rgba(167,139,250,.7)}
+  h2.section-title{font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.4rem);font-weight:600;margin-bottom:34px}
+  .preview-row{
+    display:flex;align-items:center;gap:18px;padding:19px 6px;border-bottom:1px solid var(--line);
+    text-decoration:none;color:inherit;transition:padding-left .18s,background .18s;
   }
-  .contrib b{color:var(--accent)}
-  .contrib a{color:var(--accent)}
-  footer{
-    border-top:1px solid var(--line);padding-top:24px;display:flex;
-    justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.85rem;
-  }
+  .preview-row:first-of-type{border-top:1px solid var(--line)}
+  .preview-row:hover{padding-left:16px;background:rgba(255,139,120,.04)}
+  .preview-icon{width:38px;height:38px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:1rem}
+  .icon-green{color:var(--green);border:1px solid rgba(94,234,212,.35)}
+  .icon-coral{color:var(--coral);border:1px solid rgba(255,139,120,.35)}
+  .icon-violet{color:var(--violet);border:1px solid rgba(167,139,250,.35)}
+  .preview-row-main{flex:1;min-width:0}
+  .preview-name{font-weight:600;font-size:.98rem;display:flex;gap:10px;align-items:baseline}
+  .preview-desc{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .preview-arrow{color:var(--muted);font-size:1.1rem;transition:transform .18s,color .18s}
+  .preview-row:hover .preview-arrow{transform:translateX(4px);color:var(--coral)}
+  .projects-list{margin-bottom:110px}
+
+  /* Now 与页脚 */
+  .now{border-left:2px solid var(--coral);padding:6px 0 6px 22px;margin-bottom:100px;color:var(--muted);font-size:.95rem;max-width:640px}
+  .now b{color:var(--text)}
+  .now a{color:var(--coral);text-decoration:none}
+  footer.site-footer{border-top:1px solid var(--line);padding:30px 0 44px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.84rem}
   footer a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--muted)}
-  @media(max-width:600px){.hero{justify-content:center;text-align:center}.hero .meta{display:flex;flex-direction:column;align-items:center}}
+  footer a:hover{color:var(--coral)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="hero">
-    <img class="avatar" src="https://github.com/lezi-fun.png" alt="lezi-fun avatar">
-    <div class="meta">
-      <h1>lezi<span>-fun</span></h1>
-      <p class="tagline">Student · Indie developer.<br>I build web products, open-source tools, automation, and practical utilities.</p>
-      <div class="chips">
-        <span class="chip">TypeScript</span><span class="chip">Node.js</span>
-        <span class="chip">React</span><span class="chip">Go</span>
-        <span class="chip">Swift</span><span class="chip">Rust</span><span class="chip">C++</span>
-      </div>
+
+  <nav class="site-nav">
+    <a class="brand" href="/"><span class="brand-dot"></span>lezi-fun</a>
+    <div class="nav-links">
+      <a href="#projects">项目</a>
+      <a href="https://github.com/lezi-fun">GitHub</a>
+      <a href="https://lezi.chat">lezi.chat</a>
     </div>
-  </div>
+  </nav>
 
-  <div class="stats">
-    <div><b id="repos">—</b>public repos</div>
-    <div><b>2024</b>on GitHub since</div>
-    <div><b>BE LEZI</b>motto</div>
-  </div>
+  <header>
+    <div class="status-pill"><span class="pulse"></span>Student &middot; Indie Developer &middot; Shipping</div>
+    <h1 class="hero-title">把想法做成<br><em>真正能用</em>的东西。</h1>
+    <p class="hero-meta">Web 产品、开源工具与自动化。追求上手快、读得懂、真的省时间——TypeScript / Node.js / Go / Swift / Rust / C++。</p>
+    <div class="cta">
+      <a class="button-primary" href="#projects">看作品 ↓</a>
+      <a class="button-quiet" href="https://github.com/lezi-fun">@lezi-fun</a>
+    </div>
+  </header>
 
-  <h2>Projects</h2>
-  <div class="grid">
-    <a class="card" href="https://github.com/lezi-fun/ghbot">
-      <span class="name"><span class="dot" style="background:#3178c6"></span>ghbot</span>
-      <p>AI GitHub App that reviews pull requests and optionally merges clean PRs.</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/codex-webui">
-      <span class="name"><span class="dot" style="background:#f1e05a"></span>codex-webui</span>
-      <p>Local/LAN WebUI for the Codex app-server — approvals, streaming tools, review diffs.</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/nodew-api">
-      <span class="name"><span class="dot" style="background:#3178c6"></span>nodew-api</span>
-      <p>One API in Node.js/TS — relay, channel routing, tokens, usage logging.</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/m365-copilot-client">
-      <span class="name"><span class="dot" style="background:#3572A5"></span>m365-copilot-client</span>
-      <p>M365 Copilot client experiments in Python — most-starred repo on this account.</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/cpppp">
-      <span class="name"><span class="dot" style="background:#f34b7d"></span>cpppp · c+++</span>
-      <p>现代化 C++ 编译系统：交互菜单 · AI Agent 模式 · 增量编译。</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/masker">
-      <span class="name"><span class="dot" style="background:#F05138"></span>masker</span>
-      <p>macOS 文本脱敏工具：自动检测敏感信息，UUID 替换，AI 处理后一键还原。</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/forumlify-deploy">
-      <span class="name"><span class="dot" style="background:#f1e05a"></span>forumlify-deploy</span>
-      <p>Forumlify Next.js version — one-click deploy template.</p>
-      <span class="go">查看 →</span>
-    </a>
-    <a class="card" href="https://github.com/lezi-fun/subconverter-rs">
-      <span class="name"><span class="dot" style="background:#dea584"></span>subconverter-rs</span>
-      <p>Subconverter re-implemented in Rust.</p>
-      <span class="go">查看 →</span>
-    </a>
-  </div>
+  <section class="steps">
+    <div class="step"><span class="step-num">01</span><b>从一个真实痛点开始</b><p>每个项目都源于自己每天会撞上的问题，不做玩具。</p></div>
+    <div class="step"><span class="step-num">02</span><b>小步快跑，持续交付</b><p>TypeScript 起步最快就上 TS，性能敏感就用 Go / Rust / C++。</p></div>
+    <div class="step"><span class="step-num">03</span><b>文档、CI、回归一个不少</b><p>GitHub Actions、测试与双语 README 是默认配置，不是加分项。</p></div>
+  </section>
 
-  <h2>Now</h2>
-  <div class="contrib">
-    正在上游贡献 <b>M365-Copilot2API</b>：MCP resources API 与 SSE 可靠性修复（<a href="https://github.com/HEXUXIU/M365-Copilot2API/pull/48">PR #48</a>）。<br>
-    Contributing upstream: MCP resources API &amp; SSE reliability fixes.
-  </div>
+  <section id="projects">
+    <div class="eyebrow"><span class="eyebrow-dot"></span><span style="font-size:.78rem;letter-spacing:.14em;color:var(--muted)">SELECTED WORK</span></div>
+    <h2 class="section-title">精选项目</h2>
+    <div class="projects-list">
+      <a class="preview-row" href="https://github.com/lezi-fun/ghbot">
+        <span class="preview-icon icon-coral">G</span>
+        <span class="preview-row-main">
+          <span class="preview-name">ghbot <span style="font-size:.75rem;color:var(--muted)">TypeScript</span></span>
+          <span class="preview-desc">AI GitHub App：自动审查 Pull Request，干净的 PR 可选自动合并</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+      <a class="preview-row" href="https://github.com/lezi-fun/codex-webui">
+        <span class="preview-icon icon-green">C</span>
+        <span class="preview-row-main">
+          <span class="preview-name">codex-webui <span style="font-size:.75rem;color:var(--muted)">JavaScript</span></span>
+          <span class="preview-desc">Codex app-server 的本地/局域网 WebUI——审批流、工具流式调用、审查 diff、手机可用</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+      <a class="preview-row" href="https://github.com/lezi-fun/nodew-api">
+        <span class="preview-icon icon-violet">N</span>
+        <span class="preview-row-main">
+          <span class="preview-name">nodew-api <span style="font-size:.75rem;color:var(--muted)">TypeScript</span></span>
+          <span class="preview-desc">Node.js 版 One API：OpenAI 兼容中转、渠道路由、令牌管理、用量日志</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+      <a class="preview-row" href="https://github.com/lezi-fun/m365-copilot-client">
+        <span class="preview-icon icon-green">M</span>
+        <span class="preview-row-main">
+          <span class="preview-name">m365-copilot-client <span style="font-size:.75rem;color:var(--muted)">Python · ★11</span></span>
+          <span class="preview-desc">本账号 star 数最高的仓库——M365 Copilot 客户端实验</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+      <a class="preview-row" href="https://github.com/lezi-fun/cpppp">
+        <span class="preview-icon icon-coral">c+++</span>
+        <span class="preview-row-main">
+          <span class="preview-name">cpppp <span style="font-size:.75rem;color:var(--muted)">C++</span></span>
+          <span class="preview-desc">现代化 C++ 编译系统：交互菜单 · AI Agent 模式 · 增量编译 · 对拍测试</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+      <a class="preview-row" href="https://github.com/lezi-fun/masker">
+        <span class="preview-icon icon-violet">Mk</span>
+        <span class="preview-row-main">
+          <span class="preview-name">masker <span style="font-size:.75rem;color:var(--muted)">Swift</span></span>
+          <span class="preview-desc">macOS 文本脱敏工具：自动检测敏感信息、UUID 替换、AI 处理后一键还原</span>
+        </span>
+        <span class="preview-arrow">→</span>
+      </a>
+    </div>
+  </section>
 
-  <footer>
+  <section class="now">
+    正在上游贡献 <b>M365-Copilot2API</b>：MCP resources API 与 SSE 可靠性修复（<a href="https://github.com/HEXUXIU/M365-Copilot2API/pull/48">PR #48</a>），六项评审问题已全部通过复核。
+  </section>
+
+  <footer class="site-footer">
     <div>© 2026 lezi-fun · BE LEZI(fun)!</div>
-    <div><a href="https://github.com/lezi-fun">GitHub</a> · <a href="https://lezi.chat">lezi.chat</a></div>
+    <div><a href="https://github.com/lezi-fun">GitHub</a> &nbsp;/&nbsp; <a href="https://lezi.chat">lezi.chat</a></div>
   </footer>
+
 </div>
-<script>
-  fetch("https://api.github.com/users/lezi-fun").then(r=>r.json()).then(d=>{
-    if(d.public_repos!=null) document.getElementById("repos").textContent=d.public_repos;
-  }).catch(()=>{document.getElementById("repos").textContent="40"});
-</script>
 </body>
 </html>
