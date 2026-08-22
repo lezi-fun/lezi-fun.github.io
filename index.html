@@ -3,182 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lezi-fun — 把想法做成真正能用的东西</title>
+<title>lezi-fun — GitHub 审核助手之外的一切</title>
 <meta name="description" content="lezi-fun · 学生独立开发者。Web 产品、开发者工具、自动化。">
 <style>
   :root{
-    --background:#070914; --surface:#0d1020; --line:#1d2338;
-    --text:#eceef6; --muted:#9ba3bb; --coral:#ff8b78;
-    --violet:#a78bfa; --green:#5eead4;
+    --background:#f0eee6; --ink:#141413; --muted:#4b4a46;
+    --line:#dfdbcf; --line-strong:#d2cebf; --surface:#fff;
+    --soft:rgba(20,20,19,.04);
+    --accent:#d97757; --accent-hover:#bf6642;
+    --green:#48705b; --violet:#8a7bd8;
     --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans SC",sans-serif;
-    --serif:"Songti SC","Noto Serif SC",ui-serif,Georgia,Cambria,"Times New Roman",serif;
+    --serif:"Songti SC","Noto Serif SC",Georgia,"Times New Roman",serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{background:var(--background);color:var(--text);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
-  ::selection{background:var(--coral);color:#141413}
-  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+  body{background:var(--background);color:var(--ink);font-family:var(--sans);line-height:1.75;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent);color:#fff}
+  a{color:inherit}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px}
 
-  /* 导航 */
-  .site-nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.02em;text-decoration:none;color:var(--text)}
-  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--coral);box-shadow:0 0 12px rgba(255,139,120,.8)}
-  .nav-links{display:flex;gap:26px;font-size:.88rem}
-  .nav-links a{color:var(--muted);text-decoration:none;transition:color .15s}
-  .nav-links a:hover{color:var(--coral)}
+  /* ── 品牌头 ── */
+  .site-header{display:flex;align-items:center;justify-content:space-between;padding:26px 0 22px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-mark{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:1.05rem}
+  .brand-name{display:flex;flex-direction:column;line-height:1.25}
+  .brand-name strong{font-size:1rem;letter-spacing:.01em}
+  .brand-name small{font-size:.72rem;color:var(--muted)}
+  .site-nav{display:flex;gap:24px;font-size:.88rem}
+  .site-nav a{text-decoration:none;color:var(--muted);transition:color .15s}
+  .site-nav a:hover{color:var(--accent)}
 
-  /* 状态胶囊 */
-  .status-pill{
-    display:inline-flex;align-items:center;gap:9px;margin:72px 0 28px;
-    padding:7px 16px;border:1px solid var(--line);border-radius:999px;
-    font-size:.76rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;
-  }
-  .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-out infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,.55)}70%{box-shadow:0 0 0 9px rgba(94,234,212,0)}100%{box-shadow:0 0 0 0 rgba(94,234,212,0)}}
+  /* ── Hero 双栏 ── */
+  .hero-section{padding:84px 0 96px}
+  .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:64px;align-items:start}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px}.hero-preview{order:-1}}
+  .status-pill{display:inline-flex;align-items:center;gap:9px;margin-bottom:30px;padding:7px 16px;border:1px solid var(--line-strong);border-radius:999px;font-size:.74rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  .status-pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.2s ease-out infinite}
+  @keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+  h1.hero-title{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:clamp(2.5rem,5.6vw,3.9rem);line-height:1.18;margin-bottom:26px}
+  .hero-title-line{display:block}
+  .hero-title .word{display:inline-block;opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero-title-line:nth-child(1) .word:nth-child(1){animation-delay:.05s}
+  .hero-title-line:nth-child(1) .word:nth-child(2){animation-delay:.15s}
+  .hero-title-line:nth-child(2) .word:nth-child(1){animation-delay:.3s}
+  .hero-title-line:nth-child(2) .word:nth-child(2){animation-delay:.4s}
+  .hero-title-line:nth-child(2) .word:nth-child(3){animation-delay:.5s}
+  .hero-title-line:nth-child(3) .word:nth-child(1){animation-delay:.65s}
+  .hero-title-line:nth-child(3) .word:nth-child(2){animation-delay:.75s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .hero-title em{font-style:normal;color:var(--accent)}
+  .hero-copy>p{color:var(--muted);font-size:1.04rem;max-width:480px;margin-bottom:32px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .button{display:inline-block;text-decoration:none;font-size:.92rem;padding:12px 26px;border-radius:8px;transition:all .18s}
+  .button-primary{background:var(--accent);color:#fff;font-weight:600}
+  .button-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+  .button-quiet{border:1px solid var(--line-strong);color:var(--muted)}
+  .button-quiet:hover{border-color:var(--accent);color:var(--ink)}
+  .hero-meta{display:flex;gap:22px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+  .hero-meta span{display:inline-flex;align-items:center;gap:7px}
 
-  /* 衬线大标题 */
-  h1.hero-title{
-    font-family:var(--serif);font-weight:600;color:var(--text);
-    font-size:clamp(2.5rem,7vw,4.4rem);line-height:1.14;letter-spacing:.01em;margin-bottom:26px;
-  }
-  h1.hero-title em{font-style:normal;color:var(--coral)}
-  .hero-meta{color:var(--muted);font-size:1.02rem;max-width:560px;margin-bottom:36px}
-  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:96px}
-  .button-primary{
-    display:inline-block;background:var(--coral);color:#141413;font-weight:600;font-size:.92rem;
-    padding:12px 26px;border-radius:8px;text-decoration:none;transition:transform .15s,filter .15s;
-  }
-  .button-primary:hover{transform:translateY(-1px);filter:brightness(1.06)}
-  .button-quiet{
-    display:inline-block;color:var(--muted);font-size:.92rem;padding:12px 18px;border-radius:8px;
-    border:1px solid var(--line);text-decoration:none;transition:border-color .15s,color .15s;
-  }
-  .button-quiet:hover{border-color:var(--coral);color:var(--text)}
+  /* ── LIVE 预览卡 ── */
+  .review-preview{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 16px;box-shadow:0 24px 60px -30px rgba(20,20,19,.25)}
+  .preview-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .eyebrow-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .preview-live{margin-left:auto;color:var(--green);letter-spacing:.12em;font-size:.64rem;font-weight:600}
+  .preview-row{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:1px solid var(--soft);text-decoration:none;transition:background .15s}
+  .preview-row:hover{background:rgba(217,119,87,.06)}
+  .preview-icon{width:36px;height:36px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:.85rem;background:transparent;border:1px solid currentColor}
+  .icon-coral{color:var(--accent)} .icon-violet{color:var(--violet)} .icon-green{color:var(--green)}
+  .preview-row-main{flex:1;min-width:0;line-height:1.4}
+  .preview-row-main strong{font-size:.92rem;display:block}
+  .preview-row-main small{font-size:.78rem;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .preview-status{flex:none;font-size:.72rem;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid currentColor}
+  .status-coral{color:var(--accent)} .status-violet{color:var(--violet)} .status-green{color:var(--green)}
+  .preview-foot{padding-top:14px;font-size:.78rem;color:var(--muted)}
+  .preview-foot a{color:var(--accent);text-decoration:none}
 
-  /* 三步流程 */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:110px}
-  @media(max-width:640px){.steps{grid-template-columns:1fr}}
-  .step{border:1px solid var(--line);border-radius:14px;padding:22px 20px;background:var(--surface)}
-  .step-num{font-family:var(--serif);color:var(--coral);font-size:1.05rem;margin-bottom:10px;display:block}
-  .step b{display:block;font-size:1.02rem;margin-bottom:6px;font-weight:600}
-  .step p{font-size:.85rem;color:var(--muted)}
+  /* ── 工作流三步 ── */
+  .workflow-section{padding:0 0 100px}
+  .section-kicker{font-size:.76rem;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:14px}
+  .workflow-section h2{font-family:var(--serif);font-size:clamp(1.8rem,3.6vw,2.5rem);font-weight:600;margin-bottom:40px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:720px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
+  .step-num{font-family:var(--serif);color:var(--accent);font-size:1rem;display:block;margin-bottom:10px}
+  .step b{display:block;font-size:1.02rem;margin-bottom:6px}
+  .step p{font-size:.86rem;color:var(--muted)}
 
-  /* 项目预览行 */
-  .eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:30px}
-  .eyebrow-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);box-shadow:0 0 10px rgba(167,139,250,.7)}
-  h2.section-title{font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.4rem);font-weight:600;margin-bottom:34px}
-  .preview-row{
-    display:flex;align-items:center;gap:18px;padding:19px 6px;border-bottom:1px solid var(--line);
-    text-decoration:none;color:inherit;transition:padding-left .18s,background .18s;
-  }
-  .preview-row:first-of-type{border-top:1px solid var(--line)}
-  .preview-row:hover{padding-left:16px;background:rgba(255,139,120,.04)}
-  .preview-icon{width:38px;height:38px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:1rem}
-  .icon-green{color:var(--green);border:1px solid rgba(94,234,212,.35)}
-  .icon-coral{color:var(--coral);border:1px solid rgba(255,139,120,.35)}
-  .icon-violet{color:var(--violet);border:1px solid rgba(167,139,250,.35)}
-  .preview-row-main{flex:1;min-width:0}
-  .preview-name{font-weight:600;font-size:.98rem;display:flex;gap:10px;align-items:baseline}
-  .preview-desc{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .preview-arrow{color:var(--muted);font-size:1.1rem;transition:transform .18s,color .18s}
-  .preview-row:hover .preview-arrow{transform:translateX(4px);color:var(--coral)}
-  .projects-list{margin-bottom:110px}
-
-  /* Now 与页脚 */
-  .now{border-left:2px solid var(--coral);padding:6px 0 6px 22px;margin-bottom:100px;color:var(--muted);font-size:.95rem;max-width:640px}
-  .now b{color:var(--text)}
-  .now a{color:var(--coral);text-decoration:none}
-  footer.site-footer{border-top:1px solid var(--line);padding:30px 0 44px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.84rem}
-  footer a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--muted)}
-  footer a:hover{color:var(--coral)}
+  /* ── Now / 页脚 ── */
+  .now{border-left:2px solid var(--accent);padding:4px 0 4px 22px;margin-bottom:90px;color:var(--muted);font-size:.95rem;max-width:660px}
+  .now b{color:var(--ink)}
+  .now a{color:var(--accent);text-decoration:none}
+  .site-footer{border-top:1px solid var(--line);padding:28px 0 46px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.84rem}
+  .site-footer a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--muted)}
+  .site-footer a:hover{color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <nav class="site-nav">
-    <a class="brand" href="/"><span class="brand-dot"></span>lezi-fun</a>
-    <div class="nav-links">
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark">乐</span>
+      <span class="brand-name"><strong>lezi-fun</strong><small>学生 · 独立开发者</small></span>
+    </a>
+    <nav class="site-nav">
       <a href="#projects">项目</a>
+      <a href="#how">工作方式</a>
       <a href="https://github.com/lezi-fun">GitHub</a>
       <a href="https://lezi.chat">lezi.chat</a>
-    </div>
-  </nav>
-
-  <header>
-    <div class="status-pill"><span class="pulse"></span>Student &middot; Indie Developer &middot; Shipping</div>
-    <h1 class="hero-title">把想法做成<br><em>真正能用</em>的东西。</h1>
-    <p class="hero-meta">Web 产品、开源工具与自动化。追求上手快、读得懂、真的省时间——TypeScript / Node.js / Go / Swift / Rust / C++。</p>
-    <div class="cta">
-      <a class="button-primary" href="#projects">看作品 ↓</a>
-      <a class="button-quiet" href="https://github.com/lezi-fun">@lezi-fun</a>
-    </div>
+    </nav>
   </header>
 
-  <section class="steps">
-    <div class="step"><span class="step-num">01</span><b>从一个真实痛点开始</b><p>每个项目都源于自己每天会撞上的问题，不做玩具。</p></div>
-    <div class="step"><span class="step-num">02</span><b>小步快跑，持续交付</b><p>TypeScript 起步最快就上 TS，性能敏感就用 Go / Rust / C++。</p></div>
-    <div class="step"><span class="step-num">03</span><b>文档、CI、回归一个不少</b><p>GitHub Actions、测试与双语 README 是默认配置，不是加分项。</p></div>
-  </section>
+  <main>
+    <section class="hero-section">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="status-pill"><span class="status-pulse"></span>为独立开发准备的工具箱</div>
+          <h1 class="hero-title">
+            <span class="hero-title-line"><span class="word">把想法做成</span></span>
+            <span class="hero-title-line"><span class="word"><em>真正能用</em>的</span><span class="word">东西，</span></span>
+            <span class="hero-title-line"><span class="word">然后开源。</span></span>
+          </h1>
+          <p>lezi-fun 将 Web 产品、开发者工具与自动化放进同一条安静的流水线里。它上手快，也经得起每天用。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#projects">看作品 ↓</a>
+            <a class="button button-quiet" href="https://github.com/lezi-fun">@lezi-fun</a>
+          </div>
+          <div class="hero-meta">
+            <span><span class="status-pulse"></span>持续更新中</span>
+            <span>40+ 公开仓库 · TypeScript / Go / Swift / Rust / C++</span>
+          </div>
+        </div>
 
-  <section id="projects">
-    <div class="eyebrow"><span class="eyebrow-dot"></span><span style="font-size:.78rem;letter-spacing:.14em;color:var(--muted)">SELECTED WORK</span></div>
-    <h2 class="section-title">精选项目</h2>
-    <div class="projects-list">
-      <a class="preview-row" href="https://github.com/lezi-fun/ghbot">
-        <span class="preview-icon icon-coral">G</span>
-        <span class="preview-row-main">
-          <span class="preview-name">ghbot <span style="font-size:.75rem;color:var(--muted)">TypeScript</span></span>
-          <span class="preview-desc">AI GitHub App：自动审查 Pull Request，干净的 PR 可选自动合并</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-      <a class="preview-row" href="https://github.com/lezi-fun/codex-webui">
-        <span class="preview-icon icon-green">C</span>
-        <span class="preview-row-main">
-          <span class="preview-name">codex-webui <span style="font-size:.75rem;color:var(--muted)">JavaScript</span></span>
-          <span class="preview-desc">Codex app-server 的本地/局域网 WebUI——审批流、工具流式调用、审查 diff、手机可用</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-      <a class="preview-row" href="https://github.com/lezi-fun/nodew-api">
-        <span class="preview-icon icon-violet">N</span>
-        <span class="preview-row-main">
-          <span class="preview-name">nodew-api <span style="font-size:.75rem;color:var(--muted)">TypeScript</span></span>
-          <span class="preview-desc">Node.js 版 One API：OpenAI 兼容中转、渠道路由、令牌管理、用量日志</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-      <a class="preview-row" href="https://github.com/lezi-fun/m365-copilot-client">
-        <span class="preview-icon icon-green">M</span>
-        <span class="preview-row-main">
-          <span class="preview-name">m365-copilot-client <span style="font-size:.75rem;color:var(--muted)">Python · ★11</span></span>
-          <span class="preview-desc">本账号 star 数最高的仓库——M365 Copilot 客户端实验</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-      <a class="preview-row" href="https://github.com/lezi-fun/cpppp">
-        <span class="preview-icon icon-coral">c+++</span>
-        <span class="preview-row-main">
-          <span class="preview-name">cpppp <span style="font-size:.75rem;color:var(--muted)">C++</span></span>
-          <span class="preview-desc">现代化 C++ 编译系统：交互菜单 · AI Agent 模式 · 增量编译 · 对拍测试</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-      <a class="preview-row" href="https://github.com/lezi-fun/masker">
-        <span class="preview-icon icon-violet">Mk</span>
-        <span class="preview-row-main">
-          <span class="preview-name">masker <span style="font-size:.75rem;color:var(--muted)">Swift</span></span>
-          <span class="preview-desc">macOS 文本脱敏工具：自动检测敏感信息、UUID 替换、AI 处理后一键还原</span>
-        </span>
-        <span class="preview-arrow">→</span>
-      </a>
-    </div>
-  </section>
+        <aside class="hero-preview" id="projects">
+          <div class="review-preview">
+            <div class="preview-head">
+              <span class="eyebrow-dot"></span>
+              <span style="font-size:.82rem;font-weight:600">项目流</span>
+              <span class="preview-live">LIVE</span>
+            </div>
+            <a class="preview-row" href="https://github.com/lezi-fun/ghbot">
+              <span class="preview-icon icon-coral">G</span>
+              <span class="preview-row-main"><strong>ghbot</strong><small>AI GitHub App：自动审查 PR，干净的可自动合并</small></span>
+              <span class="preview-status status-violet">持续迭代</span>
+            </a>
+            <a class="preview-row" href="https://github.com/lezi-fun/codex-webui">
+              <span class="preview-icon icon-green">C</span>
+              <span class="preview-row-main"><strong>codex-webui</strong><small>Codex app-server 的本地/局域网 WebUI，手机可用</small></span>
+              <span class="preview-status status-green">可用</span>
+            </a>
+            <a class="preview-row" href="https://github.com/lezi-fun/nodew-api">
+              <span class="preview-icon icon-violet">N</span>
+              <span class="preview-row-main"><strong>nodew-api</strong><small>Node.js 版 One API：中转 · 路由 · 令牌 · 用量</small></span>
+              <span class="preview-status status-green">稳定运行</span>
+            </a>
+            <a class="preview-row" href="https://github.com/lezi-fun/m365-copilot-client">
+              <span class="preview-icon icon-coral">M</span>
+              <span class="preview-row-main"><strong>m365-copilot-client</strong><small>M365 Copilot 客户端实验 · 本账号最高 star</small></span>
+              <span class="preview-status status-coral">★ 11</span>
+            </a>
+            <a class="preview-row" href="https://github.com/lezi-fun/cpppp">
+              <span class="preview-icon icon-violet">c+++</span>
+              <span class="preview-row-main"><strong>cpppp</strong><small>现代 C++ 编译系统：交互菜单 · Agent 模式 · 增量编译</small></span>
+              <span class="preview-status status-violet">重构中</span>
+            </a>
+            <a class="preview-row" href="https://github.com/lezi-fun/masker">
+              <span class="preview-icon icon-green">Mk</span>
+              <span class="preview-row-main"><strong>masker</strong><small>macOS 文本脱敏：敏感信息检测 · UUID 替换 · 一键还原</small></span>
+              <span class="preview-status status-green">可用</span>
+            </a>
+            <div class="preview-foot">还有 forumlify-deploy、subconverter-rs 等 → <a href="https://github.com/lezi-fun">全部仓库</a></div>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-  <section class="now">
-    正在上游贡献 <b>M365-Copilot2API</b>：MCP resources API 与 SSE 可靠性修复（<a href="https://github.com/HEXUXIU/M365-Copilot2API/pull/48">PR #48</a>），六项评审问题已全部通过复核。
-  </section>
+    <section class="workflow-section" id="how">
+      <span class="section-kicker">从想法到上线</span>
+      <h2>一条可复现的构建线。</h2>
+      <div class="steps">
+        <div class="step"><span class="step-num">01</span><b>收集真实痛点</b><p>每个项目都源于自己每天会撞上的问题，不做玩具仓库。</p></div>
+        <div class="step"><span class="step-num">02</span><b>选型即是速度</b><p>TypeScript 起步最快就上 TS；性能敏感处交给 Go / Rust / C++。</p></div>
+        <div class="step"><span class="step-num">03</span><b>默认带工程化</b><p>GitHub Actions、回归测试与双语 README 是标配，不是加分项。</p></div>
+      </div>
+    </section>
+
+    <section class="now">
+      正在上游贡献 <b>M365-Copilot2API</b>：MCP resources API 与 SSE 可靠性修复（<a href="https://github.com/HEXUXIU/M365-Copilot2API/pull/48">PR #48</a>），六项评审问题已全部通过复核。
+    </section>
+  </main>
 
   <footer class="site-footer">
     <div>© 2026 lezi-fun · BE LEZI(fun)!</div>
